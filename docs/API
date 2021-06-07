@@ -251,10 +251,57 @@ ESPEAK_API espeak_ERROR espeak_Synth_Mark(const void *text,
 	unsigned int flags,
 	unsigned int* unique_identifier,
 	void* user_data);
+翻：
+    为指定的文本合成语音。类似于espeak_Synth()，但起始位置是
+    由文本中<mark>元素的名称指定。
+
+    index_mark:  在文本中，<mark>元素的"name"属性指定
+        合成开始的点。UTF8字符串。
+
+    其他参数, 请查看 espeak_Synth()
+
+    Return: EE_OK:  操作实现
+           EE_BUFFER_FULL: 命令不能被缓冲;
+                您可以稍后再尝试调用该函数。
+	   EE_INTERNAL_ERROR.
+
+原：
+    Synthesize speech for the specified text.  Similar to espeak_Synth() but the start position is
+    specified by the name of a <mark> element in the text.
+
+    index_mark:  The "name" attribute of a <mark> element within the text which specified the
+      point at which synthesis starts.  UTF8 string.
+
+    For the other parameters, see espeak_Synth()
+
+    Return: EE_OK: operation achieved
+           EE_BUFFER_FULL: the command can not be buffered;
+             you may try after a while to call the function again.
+	   EE_INTERNAL_ERROR.
 
 6. 设置同步回调函数
 ===================================================================================
 ESPEAK_API espeak_ERROR espeak_Key(const char *key_name);
+翻：
+    说出一个键盘键的名称。
+    如果key_name是单个字符，则表示该字符的名称。
+    否则，它将key_name作为文本字符串。
+
+    Return: EE_OK:  操作实现
+           EE_BUFFER_FULL: 命令不能被缓冲;
+                您可以稍后再尝试调用该函数。
+	   EE_INTERNAL_ERROR.
+
+原：
+    Speak the name of a keyboard key.
+    If key_name is a single character, it speaks the name of the character.
+    Otherwise, it speaks key_name as a text string.
+
+    Return: EE_OK: operation achieved
+           EE_BUFFER_FULL: the command can not be buffered;
+             you may try after a while to call the function again.
+	   EE_INTERNAL_ERROR.
+
 
 7. 设置同步回调函数
 ===================================================================================
