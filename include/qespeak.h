@@ -19,7 +19,7 @@ public:
     virtual ~QEspeak();
 public slots:
     void updateValume(int val);
-    int saveToFile();
+    int saveToFile(QString filename);
     int speakText(QString text);
     int speakFile(QString filename);
 private:
