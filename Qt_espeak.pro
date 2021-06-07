@@ -30,11 +30,11 @@ CONFIG += c++11
 
 SOURCES += \
         src/main.cpp \
-        src/mainwindow.cpp
-
+        src/mainwindow.cpp \
+        src/qespeak.cpp
 HEADERS += \
-        include/mainwindow.h
-
+        include/mainwindow.h \
+        include/qespeak.h
 FORMS += \
         ui/mainwindow.ui
 
