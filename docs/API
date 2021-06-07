@@ -1,0 +1,86 @@
+一. espeak库API
+***************
+1. 初始化函数
+===================================================================================
+    ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output, int buflength, const char *path, int options);
+翻：
+    必须在调用任何合成函数之前调用。
+    output: 音频数据可以由eSpeak播放，也可以由SynthCallback函数传递回来。
+
+    buflength:  传递给SynthCallback函数的声音缓冲区的长度(mS)。
+            Value=0 设置默认值200mS.
+            此参数仅用于AUDIO_OUTPUT_RETRIEVAL和AUDIO_OUTPUT_SYNCHRONOUS模式。
+
+    path: 包含speak-data目录的目录，默认位置为NULL。
+
+    options: bit 0:  1=allow espeakEVENT_PHONEME事件。
+            bit 1:  1=espeakEVENT_PHONEME 事件给出IPA音素名，而不是eSpeak音素名
+            bit 15: 1=don't exit 如果没有找到espeak_data (used for --help)
+
+    Returns: 采样速率(Hz), or -1 (EE_INTERNAL_ERROR).
+
+原：
+    Must be called before any synthesis functions are called.
+    output: the audio data can either be played by eSpeak or passed back by the SynthCallback function.
+
+    buflength:  The length in mS of sound buffers passed to the SynthCallback function.
+            Value=0 gives a default of 200mS.
+            This paramater is only used for AUDIO_OUTPUT_RETRIEVAL and AUDIO_OUTPUT_SYNCHRONOUS modes.
+
+    path: The directory which contains the espeak-data directory, or NULL for the default location.
+
+    options: bit 0:  1=allow espeakEVENT_PHONEME events.
+            bit 1:  1= espeakEVENT_PHONEME events give IPA phoneme names, not eSpeak phoneme names
+            bit 15: 1=don't exit if espeak_data is not found (used for --help)
+
+    Returns: sample rate in Hz, or -1 (EE_INTERNAL_ERROR).
+
+2. 设置同步回调函数
+===================================================================================
+    ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback);
+翻：
+    必须在调用任何合成函数之前调用。
+    这指定了调用程序中的一个函数，当缓冲区
+    语音数据已经产生。
+
+    回调函数的形式如下:
+
+    int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
+
+    wav:  代表已产生的语音声音数据。
+      NULL 表示合成已经完成。
+
+    numsamples: 代表wav中的条目数。这个数字可以变化，可以小于
+        espeak_Initialize中给出的buflength参数所隐含的值，并且可以
+        有时为零(这并不表示合成的结束)。   
+
+    events: 一个espeak_EVENT项数组，它指示单词和句子事件，以及
+        在文本中出现if <mark>和<audio>元素。的列表
+        事件被类型为0的事件终止。
+
+
+    Callback returns: 0=继续合成,  1=中止合成.
+
+原：
+    Must be called before any synthesis functions are called.
+    This specifies a function in the calling program which is called when a buffer of
+    speech sound data has been produced.
+
+
+    The callback function is of the form:
+
+    int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
+
+    wav:  is the speech sound data which has been produced.
+      NULL indicates that the synthesis has been completed.
+
+    numsamples: is the number of entries in wav.  This number may vary, may be less than
+      the value implied by the buflength parameter given in espeak_Initialize, and may
+      sometimes be zero (which does NOT indicate end of synthesis).
+
+    events: an array of espeak_EVENT items which indicate word and sentence events, and
+      also the occurance if <mark> and <audio> elements within the text.  The list of
+      events is terminated by an event of type = 0.
+
+
+    Callback returns: 0=continue synthesis,  1=abort synthesis.
