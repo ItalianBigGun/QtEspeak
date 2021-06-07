@@ -56,6 +56,5 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_playBtn_clicked()
 {
-    QString speak_text = ui->speak_text->toPlainText();
-    espeak_test(speak_text.toStdString().c_str());
+    espeak_test(ui->speak_text->toPlainText().toStdString().c_str());
 }
