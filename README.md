@@ -13,7 +13,8 @@
 
 #### 使用说明
 
-
+建议使用Qt5.9.8的mingW32位编译器。现成库下载路径：
+https://gitee.com/boyboynextdoor/maybe-used-lib espeakAndportaudio-mingw53_32.rar
 
 #### 参与贡献
 
