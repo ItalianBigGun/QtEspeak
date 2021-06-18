@@ -1,132 +1,132 @@
-一. espeak库API
-***************
-1. 初始化函数
-===================================================================================
-    ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output, int buflength, const char *path, int options);
-翻：
-    必须在调用任何合成函数之前调用。
-    output: 音频数据可以由eSpeak播放，也可以由SynthCallback函数传递回来。
+ ## 一. espeak库API
+***************<br/>
+### 1. 初始化函数
+===================================================================================<br/>
+    ESPEAK_API int espeak_Initialize(espeak_AUDIO_OUTPUT output, int buflength, const char *path, int options);<br/>
+翻：<br/>
+    必须在调用任何合成函数之前调用。<br/>
+    output: 音频数据可以由eSpeak播放，也可以由SynthCallback函数传递回来。<br/>
+<br/>
+    buflength:  传递给SynthCallback函数的声音缓冲区的长度(mS)。<br/>
+            Value=0 设置默认值200mS.<br/>
+            此参数仅用于AUDIO_OUTPUT_RETRIEVAL和AUDIO_OUTPUT_SYNCHRONOUS模式。<br/>
+<br/>
+    path: 包含speak-data目录的目录，默认位置为NULL。<br/>
+<br/>
+    options: bit 0:  1=allow espeakEVENT_PHONEME事件。<br/>
+            bit 1:  1=espeakEVENT_PHONEME 事件给出IPA音素名，而不是eSpeak音素名<br/>
+            bit 15: 1=don't exit 如果没有找到espeak_data (used for --help)<br/>
+<br/>
+    Returns: 采样速率(Hz), or -1 (EE_INTERNAL_ERROR).<br/>
+<br/>
+原：<br/>
+    Must be called before any synthesis functions are called.<br/>
+    output: the audio data can either be played by eSpeak or passed back by the SynthCallback function.<br/>
+<br/>
+    buflength:  The length in mS of sound buffers passed to the SynthCallback function.<br/>
+            Value=0 gives a default of 200mS.<br/>
+            This paramater is only used for AUDIO_OUTPUT_RETRIEVAL and AUDIO_OUTPUT_SYNCHRONOUS modes.<br/>
+<br/>
+    path: The directory which contains the espeak-data directory, or NULL for the default location.<br/>
+<br/>
+    options: bit 0:  1=allow espeakEVENT_PHONEME events.<br/>
+            bit 1:  1= espeakEVENT_PHONEME events give IPA phoneme names, not eSpeak phoneme names<br/>
+            bit 15: 1=don't exit if espeak_data is not found (used for --help)<br/>
+<br/>
+    Returns: sample rate in Hz, or -1 (EE_INTERNAL_ERROR).<br/>
+<br/>
+### 2. 设置同步回调函数<br/>
+===================================================================================<br/>
+    ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback);<br/>
+翻：<br/>
+    必须在调用任何合成函数之前调用。<br/>
+    这指定了调用程序中的一个函数，当缓冲区<br/>
+    语音数据已经产生，函数会被调用。<br/>
+<br/>
+    回调函数的形式如下:<br/>
+<br/>
+    int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);<br/>
+<br/>
+    wav:  代表已产生的语音声音数据。<br/>
+      NULL 表示合成已经完成。<br/>
 
-    buflength:  传递给SynthCallback函数的声音缓冲区的长度(mS)。
-            Value=0 设置默认值200mS.
-            此参数仅用于AUDIO_OUTPUT_RETRIEVAL和AUDIO_OUTPUT_SYNCHRONOUS模式。
-
-    path: 包含speak-data目录的目录，默认位置为NULL。
-
-    options: bit 0:  1=allow espeakEVENT_PHONEME事件。
-            bit 1:  1=espeakEVENT_PHONEME 事件给出IPA音素名，而不是eSpeak音素名
-            bit 15: 1=don't exit 如果没有找到espeak_data (used for --help)
-
-    Returns: 采样速率(Hz), or -1 (EE_INTERNAL_ERROR).
-
-原：
-    Must be called before any synthesis functions are called.
-    output: the audio data can either be played by eSpeak or passed back by the SynthCallback function.
-
-    buflength:  The length in mS of sound buffers passed to the SynthCallback function.
-            Value=0 gives a default of 200mS.
-            This paramater is only used for AUDIO_OUTPUT_RETRIEVAL and AUDIO_OUTPUT_SYNCHRONOUS modes.
-
-    path: The directory which contains the espeak-data directory, or NULL for the default location.
-
-    options: bit 0:  1=allow espeakEVENT_PHONEME events.
-            bit 1:  1= espeakEVENT_PHONEME events give IPA phoneme names, not eSpeak phoneme names
-            bit 15: 1=don't exit if espeak_data is not found (used for --help)
-
-    Returns: sample rate in Hz, or -1 (EE_INTERNAL_ERROR).
-
-2. 设置同步回调函数
-===================================================================================
-    ESPEAK_API void espeak_SetSynthCallback(t_espeak_callback* SynthCallback);
-翻：
-    必须在调用任何合成函数之前调用。
-    这指定了调用程序中的一个函数，当缓冲区
-    语音数据已经产生，函数会被调用。
-
-    回调函数的形式如下:
-
-    int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
-
-    wav:  代表已产生的语音声音数据。
-      NULL 表示合成已经完成。
-
-    numsamples: 代表wav中的条目数。这个数字可以变化，可以小于
-        espeak_Initialize中给出的buflength参数所隐含的值，并且可以
-        有时为零(这并不表示合成的结束)。   
-
-    events: 一个espeak_EVENT项数组，它指示单词和句子事件，以及
-        在文本中出现if <mark>和<audio>元素。的列表
-        事件被类型为0的事件终止。
-
-
-    Callback returns: 0=继续合成,  1=中止合成.
-
-原：
-    Must be called before any synthesis functions are called.
-    This specifies a function in the calling program which is called when a buffer of
-    speech sound data has been produced.
-
-
-    The callback function is of the form:
-
-    int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
-
-    wav:  is the speech sound data which has been produced.
-      NULL indicates that the synthesis has been completed.
-
-    numsamples: is the number of entries in wav.  This number may vary, may be less than
-      the value implied by the buflength parameter given in espeak_Initialize, and may
-      sometimes be zero (which does NOT indicate end of synthesis).
-
-    events: an array of espeak_EVENT items which indicate word and sentence events, and
-      also the occurance if <mark> and <audio> elements within the text.  The list of
-      events is terminated by an event of type = 0.
-
-
-    Callback returns: 0=continue synthesis,  1=abort synthesis.
-
-3. 设置同步回调函数
-===================================================================================
-ESPEAK_API void espeak_SetUriCallback(int (*UriCallback)(int, const char*, const char*));
-
-翻：
-    此函数可以在使用合成函数之前调用，以便处理
-    <音频>标签。它指定了一个回调函数，当<audio>元素为
-    遇到并允许调用程序指示声音文件是否
-    在<audio>元素中指定。
-
-    回调函数的形式是:
-
-    int UriCallback(int type, const char *uri, const char *base);
-
-    type:  回调事件的类型。目前只有1= <audio>元素
-
-    uri:   <audio>元素中的"src"属性
-
-    base:  <speak>元素的"xml:base"属性(如果有的话)
-
-    Return: 1=不要播放声音，除非要说的文本被替代。
-           0=在事件列表中<audio>元素处放置一个PLAY事件
-              发生。然后调用程序可以在此时播放声音。
-
+    numsamples: 代表wav中的条目数。这个数字可以变化，可以小于<br/>
+        espeak_Initialize中给出的buflength参数所隐含的值，并且可以<br/>
+        有时为零(这并不表示合成的结束)。   <br/>
+<br/>
+    events: 一个espeak_EVENT项数组，它指示单词和句子事件，以及<br/>
+        如果\<mark\>和\<audio\>元素在文本中出现。列表中<br/>
+        事件会被类型为0的事件终止。<br/>
+<br/>
+<br/>
+    Callback returns: 0=继续合成,  1=中止合成.<br/>
+<br/>
+原：<br/>
+    Must be called before any synthesis functions are called.<br/>
+    This specifies a function in the calling program which is called when a buffer of<br/>
+    speech sound data has been produced.<br/>
+<br/>
+<br/>
+    The callback function is of the form:<br/>
+<br/>
+    int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);<br/>
+<br/>
+    wav:  is the speech sound data which has been produced.<br/>
+      NULL indicates that the synthesis has been completed.<br/>
+<br/>
+    numsamples: is the number of entries in wav.  This number may vary, may be less than<br/>
+      the value implied by the buflength parameter given in espeak_Initialize, and may<br/>
+      sometimes be zero (which does NOT indicate end of synthesis).<br/>
+<br/>
+    events: an array of espeak_EVENT items which indicate word and sentence events, and<br/>
+      also the occurance if \<mark\> and \<audio\> elements within the text.  The list of<br/>
+      events is terminated by an event of type = 0.<br/>
+<br/>
+<br/>
+    Callback returns: 0=continue synthesis,  1=abort synthesis.<br/>
+<br/>
+3. 设置同步回调函数<br/>
+===================================================================================<br/>
+ESPEAK_API void espeak_SetUriCallback(int (*UriCallback)(int, const char*, const char*));<br/>
+<br/>
+翻：<br/>
+    此函数可以在使用合成函数之前调用，以便处理<br/>
+    <音频>标签。它指定了一个回调函数，当\<audio\>元素为<br/>
+    遇到并允许调用程序指示声音文件是否<br/>
+    在\<audio\>元素中指定。<br/>
+<br/>
+    回调函数的形式是:<br/>
+<br/>
+    int UriCallback(int type, const char *uri, const char *base);<br/>
+<br/>
+    type:  回调事件的类型。目前只有1= \<audio\>元素<br/>
+<br/>
+    uri:   \<audio\>元素中的"src"属性<br/>
+<br/>
+    base:  \<speak\>元素的"xml:base"属性(如果有的话)<br/>
+<br/>
+    Return: 1=不要播放声音，除非要说的文本被替代。<br/>
+           0=在事件列表中\<audio\>元素处放置一个PLAY事件<br/>
+              发生。然后调用程序可以在此时播放声音。<br/>
+<br/>
 原：
     This function may be called before synthesis functions are used, in order to deal with
-    <audio> tags.  It specifies a callback function which is called when an <audio> element is
+    \<audio\> tags.  It specifies a callback function which is called when an \<audio\> element is
     encountered and allows the calling program to indicate whether the sound file which
-    is specified in the <audio> element is available and is to be played.
+    is specified in the \<audio\> element is available and is to be played.
 
     The callback function is of the form:
 
     int UriCallback(int type, const char *uri, const char *base);
 
-    type:  type of callback event.  Currently only 1= <audio> element
+    type:  type of callback event.  Currently only 1= \<audio\> element
 
-    uri:   the "src" attribute from the <audio> element
+    uri:   the "src" attribute from the \<audio\> element
 
-    base:  the "xml:base" attribute (if any) from the <speak> element
+    base:  the "xml:base" attribute (if any) from the \<speak\> element
 
     Return: 1=don't play the sound, but speak the text alternative.
-           0=place a PLAY event in the event list at the point where the <audio> element
+           0=place a PLAY event in the event list at the point where the \<audio\> element
              occurs.  The calling program can then play the sound at that point.
 
 4. 合成语音函数
@@ -608,10 +608,10 @@ ESPEAK_API espeak_ERROR espeak_SetVoiceByProperties(espeak_VOICE *voice_spec);
 ESPEAK_API espeak_VOICE *espeak_GetCurrentVoice(void);
 翻：
     返回当前所选voice的espeak_VOICE数据。
-    这不会受到SSML元素(如<voice>,<s>)引起的临时语音变化的影响。
+    这不会受到SSML元素(如\<voice\>,\<s\>)引起的临时语音变化的影响。
 原：
     Returns the espeak_VOICE data for the currently selected voice.
-    This is not affected by temporary voice changes caused by SSML elements such as <voice> and <s>
+    This is not affected by temporary voice changes caused by SSML elements such as \<voice\> and \<s\>
 
 18. 结束合成语音函数
 ===================================================================================
